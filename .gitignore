@@ -1,0 +1,26 @@
+# Ignore Node.js build artifacts
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Ignore development server logs
+server/logs/
+
+# Ignore client build artifacts
+client/build/
+
+# Ignore environment variables
+.env
+
+# Ignore OS generated files
+.DS_Store
+
+# Ignore editor-specific files
+.vscode/
+.idea/
+
+# Ignore package-lock.json for npm
+package-lock.json
+
+# Ignore yarn.lock for Yarn
+yarn.lock
