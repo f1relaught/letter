@@ -13,11 +13,11 @@ app.use(express.json())
 mongoose.connect('mongodb://database:27017/Otyot')
 
 app.get("/getPsukim", async (req, res) => {
-    const ot = await Psukim.find({})
-    if (ot === null) {
+    const passuk = await Psukim.find({})
+    if (passuk === null) {
         res.json(err)
     } else {
-        res.json(ot)
+        res.json(passuk)
     }
 });
 
