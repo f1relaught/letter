@@ -62,7 +62,6 @@ app.post("/passuk", async (req, res) => {
 				  status: true
 				});
 				await newOtyot.save();
-				console.log("This letter does not exist yet!");
 			  } else {
 				await Otyot.updateOne(
 				  { _id: otyot._id },
