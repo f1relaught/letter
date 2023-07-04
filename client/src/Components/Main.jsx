@@ -5,6 +5,7 @@ import Axios from "axios";
 export default function Main() {
 
     const [psukim, setPsukim] = useState([]);
+    const [otyot, setOtyot] = useState([]);
     const [searchInput, setSearchInput] = useState("");
     const [showPopup, setShowPopup] = useState(false);
     const [showCantBuyPopup, setShowCantBuyPopup] = useState(false);
@@ -19,7 +20,7 @@ export default function Main() {
     const handleChange = async () => {
         try {
           const response = await Axios.get(`http://localhost:3001/getOtyot?ot=${searchInput}`);
-          const otyot = response.data;
+          setOtyot(response.data);
         
           if (otyot) {
             const status = otyot[0].status;
