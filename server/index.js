@@ -10,7 +10,7 @@ app.use(cors())
 app.use(express.json())
 
 //connect to the database
-mongoose.connect('mongodb://localhost:27017/Otyot')
+mongoose.connect('mongodb://database:27017/Otyot')
 
 // route for the passuk's search
 app.get("/getPsukim", async (req, res) => {
