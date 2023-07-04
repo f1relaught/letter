@@ -6,7 +6,8 @@ export default function Main() {
 
     const [psukim, setPsukim] = useState([]);
     const [searchInput, setSearchInput] = useState("");
-    const [showPopup, setShowPopup] = useState(false)
+    const [showPopup, setShowPopup] = useState(false);
+    const [showCantBuyPopup, setShowCantBuyPopup] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     
     useEffect(() => {
@@ -19,21 +20,16 @@ export default function Main() {
         try {
           const response = await Axios.get(`http://localhost:3001/getOtyot?ot=${searchInput}`);
           const otyot = response.data;
-          console.log(otyot)
         
           if (otyot) {
-            const status = otyot.status;
-            console.log(status)
+            const status = otyot[0].status;
             
             if (status) {
               setShowPopup(true);
-              console.log(showPopup)
             } else {
-              // Handle the case when the letter doesn't exist or its status is false
+              setShowCantBuyPopup(true);
             }
-          } else {
-            // Handle the case when the letter is not found in the Otyot collection
-          }
+          } 
         } catch (error) {
           console.error('Error:', error);
           // Handle error
@@ -65,8 +61,6 @@ export default function Main() {
                 />
                 <button onClick={handleChange}>חפש</button>
             </div>
-        
-            {/* Add the new code here */}
             {showPopup && (
                 <div className="fixed inset-0 flex items-center justify-center z-50">
                     <div className="bg-white p-8 rounded-lg shadow">
@@ -81,8 +75,16 @@ export default function Main() {
                     </div>
                 </div>
             )}
+            {showCantBuyPopup && (
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <div className="bg-white p-8 rounded-lg shadow">
+                        <h2 className="text-2xl font-bold mb-4">Can't Buy Letter</h2>
+                        <p className="mb-4">!This letter is not available to be bought</p>
+                    </div>
+                </div>
+            )}
             {successMessage && (
-                <div className="success-message">{successMessage}</div>
+                <div className="success-message text-center">{successMessage}</div>
             )}
             
             {/* Render the Passuk components */}

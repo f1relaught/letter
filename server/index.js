@@ -4,31 +4,37 @@ import Psukim from "./models/Passuks.js"
 import Otyot from "./models/Otyot.js"
 import cors from "cors";
 
-
+//create the server
 const app = express()
 app.use(cors())
 app.use(express.json())
 
+//connect to the database
+mongoose.connect('mongodb://localhost:27017/Otyot')
 
-mongoose.connect('mongodb://database:27017/Otyot')
-
+// route for the passuk's search
 app.get("/getPsukim", async (req, res) => {
-    const passuk = await Psukim.find({})
-    if (passuk === null) {
-        res.json(err)
-    } else {
-        res.json(passuk)
-    }
+    try {
+		const psukim = await Psukim.find({});
+		if (psukim) {
+			res.json(psukim);
+		} else {
+			res.json({ exists: false });
+		}
+	} catch (error) {
+		console.error('Error:', error);
+		res.status(500).json({ error: 'An error occurred while fetching the Passuk.' });
+	}
 });
 
+// route for the otyot's search
 app.get("/getOtyot", async (req, res) => {
 	try {
 	  const { ot } = req.query;
-	  console.log(ot)
-	  const otyot = await Otyot.findOne({ ot: ot });
+	  const otyot = await Otyot.find({ ot: ot });
 		
 	  if (otyot) {
-		res.json({ ot: otyot.ot, count: otyot.count, status: otyot.status });
+		res.json(otyot);
 	  } else {
 		res.json({ exists: false });
 	  }
@@ -38,7 +44,9 @@ app.get("/getOtyot", async (req, res) => {
 	}
   });
 
-app.post("/passuk", async (req, res) => {
+
+//route for the generation of the datase
+app.post("/database", async (req, res) => {
     try {
 		
 		const passuk = req.body.passuk
@@ -48,38 +56,31 @@ app.post("/passuk", async (req, res) => {
 		  }
 
 		// Store the sentence in the passuks collection
-		const newPassuk = new Psukim({ passuk });
-		await newPassuk.save();
+		const newPassuk = new Psukim({ passuk, otyot: [] });
+		const passukId = newPassuk._id;
 		  
-		// Map the letters and store them in the letter collection
-		for (const ot of passuk) {
-			if (ot) {
-			  const otyot = await Otyot.findOne({ ot });
-			  if (!otyot) {
-				const newOtyot = new Otyot({
-				  ot,
-				  count: 1,
-				  status: true
-				});
-				await newOtyot.save();
-			  } else {
-				await Otyot.updateOne(
-				  { _id: otyot._id },
-				  { $inc: { count: 1 } }
-				);
-				console.log("This letter is already in the database!");
-			  }
-			}
-		  }
-	
+		// Store the otyot in the otyot collection
+		const nbs = passuk.replace(/\s+/g, '');
+		const otyot = nbs.split('');
+		
+		for (const ot of otyot) {
+			const newOtyot = new Otyot({
+				ot,
+				status: true,
+				passuk: passukId
+			});
+			await newOtyot.save();
+			newPassuk.otyot.push(newOtyot._id);
+		}
+		await newPassuk.save();
 		res.status(200).json({ message: 'Passuk and otyot stored successfully.' });
-	  } catch (error) {
+	} catch (error) {
 		console.error('Error:', error);
 		res.status(500).json({ error: 'An error occurred while storing the passuk and otyot.' });
 	  }
-	});
-
+});
+		
 
 app.listen('3001', () => {
-    console.log("Server running 3001")
+    console.log("Server running on http://localhost:3001")
 })
