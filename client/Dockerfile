@@ -17,7 +17,7 @@ COPY . .
 EXPOSE 3000
 
 # Serve the built client-side application
-CMD [ "npm", "run", "dev" ]
+CMD [ "npm", "run", "build" ]
 
 # Nginx configuration
 
