@@ -7,23 +7,18 @@ WORKDIR /app
 # Copy package.json and package-lock.json to the container
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
-
 # Copy the rest of the client-side code to the container
 COPY . .
 
-# Expose the port that the client-side application will be served on
-EXPOSE 3000
+# Install dependencies
+RUN npm install
 
-# Serve the built client-side application
-CMD [ "npm", "run", "build" ]
-
+CMD ["npm", "run", "build"]
 # Nginx configuration
 
 FROM nginx:alpine
 
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app /usr/share/nginx/html
 
 RUN rm /etc/nginx/conf.d/default.conf
 
