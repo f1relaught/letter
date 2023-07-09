@@ -13,7 +13,7 @@ app.use(express.json())
 mongoose.connect('mongodb://database:27017/Otyot')
 
 // route for the passuk's search
-app.get("/getPsukim", async (req, res) => {
+app.get("/api/getPsukim", async (req, res) => {
     try { 
 		const psukim = await Psukim.find({});
 		
@@ -29,7 +29,7 @@ app.get("/getPsukim", async (req, res) => {
 	}
 });
 
-app.get("/getOtyot", async (req, res) => {
+app.get("/api/getOtyot", async (req, res) => {
 	try {
 	  	const { passukId } = req.query;
 		const otyot = await Otyot.find({ passuk: passukId });	
@@ -41,7 +41,7 @@ app.get("/getOtyot", async (req, res) => {
   });
 
 // route for the otyot's search
-app.get("/searchOtyot", async (req, res) => {
+app.get("/api/searchOtyot", async (req, res) => {
 	try {
 	  const { ot } = req.query;
 	  console.log(ot)
@@ -61,7 +61,7 @@ app.get("/searchOtyot", async (req, res) => {
 
 
 //route for the generation of the datase
-app.post("/database", async (req, res) => {
+app.post("/api/database", async (req, res) => {
     try {
 		
 		const passuk = req.body.passuk
@@ -96,5 +96,5 @@ app.post("/database", async (req, res) => {
 		
 
 app.listen('3001', () => {
-    console.log("Server running on http://localhost:3001")
+    console.log("Server running on http://localhost:3001/api")
 })

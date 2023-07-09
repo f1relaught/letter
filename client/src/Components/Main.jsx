@@ -13,7 +13,7 @@ export default function Main() {
     const [successMessage, setSuccessMessage] = useState("");
     
     useEffect(() => {
-      Axios.get("http://localhost:3001/getPsukim").then((response) => {
+      Axios.get("http://localhost:3001/api/getPsukim").then((response) => {
         psukim = response.data;
         console.log(psukim);
       });
@@ -21,7 +21,7 @@ export default function Main() {
     
     const handleChange = async () => {
         try {
-          const response = await Axios.get(`http://localhost:3001/searchOtyot?ot=${searchInput}`);
+          const response = await Axios.get(`http://localhost:3001/api/searchOtyot?ot=${searchInput}`);
           setOt(response.data);
         
           if (ot) {
