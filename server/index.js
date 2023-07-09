@@ -14,12 +14,14 @@ mongoose.connect('mongodb://database:27017/Otyot')
 
 // route for the passuk's search
 app.get("/getPsukim", async (req, res) => {
-    try {
+    try { 
 		const psukim = await Psukim.find({});
-		if (psukim) {
-			res.json(psukim);
-		} else {
-			res.json({ exists: false });
+		
+		if (psukim) 
+		{
+			res.json({ psukim });
+		}else {
+				res.json({ exists: false });
 		}
 	} catch (error) {
 		console.error('Error:', error);
@@ -27,13 +29,26 @@ app.get("/getPsukim", async (req, res) => {
 	}
 });
 
-// route for the otyot's search
 app.get("/getOtyot", async (req, res) => {
 	try {
+	  	const { passukId } = req.query;
+		const otyot = await Otyot.find({ passuk: passukId });	
+		console.log(otyot)
+	} catch (error) {
+	  console.error('Error:', error);
+	  res.status(500).json({ error: 'An error occurred while fetching the Otyot.' });
+	}
+  });
+
+// route for the otyot's search
+app.get("/searchOtyot", async (req, res) => {
+	try {
 	  const { ot } = req.query;
+	  console.log(ot)
 	  const otyot = await Otyot.find({ ot: ot });
 		
 	  if (otyot) {
+		console.log(otyot)
 		res.json(otyot);
 	  } else {
 		res.json({ exists: false });
@@ -60,8 +75,7 @@ app.post("/database", async (req, res) => {
 		const passukId = newPassuk._id;
 		  
 		// Store the otyot in the otyot collection
-		const nbs = passuk.replace(/\s+/g, '');
-		const otyot = nbs.split('');
+		const otyot = passuk.split('');
 		
 		for (const ot of otyot) {
 			const newOtyot = new Otyot({

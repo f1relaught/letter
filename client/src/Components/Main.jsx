@@ -3,32 +3,33 @@ import { useEffect, useState } from "react";
 import Axios from "axios";
 
 export default function Main() {
+  
+    let showPopup = false;
+    let showCantBuyPopup = false;
+    let psukim = [];
 
-    const [psukim, setPsukim] = useState([]);
-    const [otyot, setOtyot] = useState([]);
+    const [ot, setOt] = useState([]);
     const [searchInput, setSearchInput] = useState("");
-    const [showPopup, setShowPopup] = useState(false);
-    const [showCantBuyPopup, setShowCantBuyPopup] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     
     useEffect(() => {
       Axios.get("http://localhost:3001/getPsukim").then((response) => {
-        setPsukim(response.data);
+        psukim = response.data;
+        console.log(psukim);
       });
     }, []);
     
     const handleChange = async () => {
         try {
-          const response = await Axios.get(`http://localhost:3001/getOtyot?ot=${searchInput}`);
-          setOtyot(response.data);
+          const response = await Axios.get(`http://localhost:3001/searchOtyot?ot=${searchInput}`);
+          setOt(response.data);
         
-          if (otyot) {
-            const status = otyot[0].status;
-            
+          if (ot) {
+            const status = ot[0].status;
             if (status) {
-              setShowPopup(true);
+              showPopup = true;
             } else {
-              setShowCantBuyPopup(true);
+              showCantBuyPopup = true;
             }
           } 
         } catch (error) {
@@ -89,9 +90,11 @@ export default function Main() {
             )}
             
             {/* Render the Passuk components */}
-            {psukim.map((passuk) => {
-                return <Passuk key={passuk._id} passuk={passuk} />;
-            })}
+            {
+                psukim.map((passuk) => {
+                    return <Passuk key={passuk._id} passuk={passuk} />
+                }
+            )}
         </div>
     </>
     );
