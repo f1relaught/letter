@@ -11,7 +11,7 @@ services:
       - database
   nginx:
     depends_on:
-      - api
+      - backend
     restart: always
     build:
       dockerfile: Dockerfile
