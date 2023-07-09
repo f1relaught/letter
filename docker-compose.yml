@@ -1,6 +1,6 @@
 version: '3'
 services:
-  backend:
+  api:
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -11,7 +11,7 @@ services:
       - database
   nginx:
     depends_on:
-      - backend
+      - api
     restart: always
     build:
       dockerfile: Dockerfile
