@@ -2,7 +2,7 @@
 FROM node:alpine as build
 
 # Set the working directory inside the container
-WORKDIR /app
+WORKDIR /build
 
 # Copy package.json and package-lock.json to the container
 COPY package*.json ./
@@ -23,7 +23,7 @@ CMD [ "npm", "run", "dev" ]
 
 FROM nginx:alpine
 
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /app /usr/share/nginx/html
 
 RUN rm /etc/nginx/conf.d/default.conf
 
