@@ -20,6 +20,7 @@ app.get("/api/getPsukim", async (req, res) => {
 		if (psukim) 
 		{
 			res.json({ psukim });
+			console.log(psukim)
 		}else {
 				res.json({ exists: false });
 		}
