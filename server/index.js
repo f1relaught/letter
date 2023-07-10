@@ -17,13 +17,12 @@ app.get("/api/getPsukim", async (req, res) => {
     try { 
 		const psukim = await Psukim.find({});
 		
-		if (psukim) 
-		{
+		if (psukim) {
 			res.json({ psukim });
-			console.log(psukim)
-		}else {
-				res.json({ exists: false });
-		}
+			console.log(psukim);
+		  } else {
+			res.json({ exists: false });
+		  }		  
 	} catch (error) {
 		console.error('Error:', error);
 		res.status(500).json({ error: 'An error occurred while fetching the Passuk.' });
