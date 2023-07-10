@@ -13,17 +13,7 @@ RUN npm install
 # Copy the rest of the app's files to the container
 COPY . .
 
-# Build the app
-RUN npm run build
+EXPOSE 3000
 
-# Use an Nginx image to serve the app
-FROM nginx:alpine
+CMD [ "npm", "run", "dev" ]
 
-# Copy the build output from the previous stage to the Nginx container
-COPY --from=0 /app/dist /usr/share/nginx/html
-
-# Copy the Nginx configuration file to the container
-COPY nginx/default.conf /etc/nginx/conf.d/default.conf
-
-# Expose port 80 for the Nginx server
-EXPOSE 80

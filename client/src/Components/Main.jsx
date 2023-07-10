@@ -12,7 +12,8 @@ export default function Main() {
 
   useEffect(() => {
     Axios.get("http://localhost:3001/api/getPsukim").then((response) => {
-      setPsukim(response.data);
+      setPsukim(response.data.psukim);
+      console.log(response.data)
     });
   }, []);
 
