@@ -1,4 +1,3 @@
-
 import Passuk from "./Passuk";
 import { useEffect, useState } from "react";
 import Axios from "axios";
@@ -26,6 +25,7 @@ export default function Main() {
 
       if (ot) {
         const status = ot[0].status;
+												console.log(ot)
         if (status) {
           setShowPopup(true);
         } else {
