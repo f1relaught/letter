@@ -19,7 +19,6 @@ RUN npm run build
 
 FROM nginx:alpine
 
-
 # Copy the default nginx.conf provided by tiangolo/node-frontend
 COPY --from=0 /app/dist /usr/share/nginx/html
 

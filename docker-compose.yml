@@ -9,27 +9,6 @@ services:
     restart: always
     depends_on:
       - database
-  nginx:
-    depends_on:
-      - api
-    restart: always
-    build:
-      dockerfile: Dockerfile
-      context: ./client
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/conf/:/etc/nginx/conf.d/:ro
-      - ./certbot/www:/var/www/certbot/:ro
-      - ./certbot/conf:/etc/letsencrypt/:ro
-
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./certbot/www:/var/www/certbot/
-      - ./certbot/conf:/etc/letsencrypt
-    command: certonly --webroot --webroot-path=/var/www/certbot --email benamotzy@gmail.com --agree-tos --no-eff-email --staging --dry-run -d ytzba.com -d www.ytzba.com
 
   database:
     image: mongo
