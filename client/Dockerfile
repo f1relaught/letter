@@ -13,7 +13,15 @@ RUN npm install
 # Copy the rest of the app's files to the container
 COPY . .
 
-EXPOSE 3000
+RUN npm run build
 
-CMD [ "npm", "run", "dev" ]
+FROM nginx:alpine
 
+# Copy the default nginx.conf provided by tiangolo/node-frontend
+COPY --from=0 /app/dist /usr/share/nginx/html
+
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
