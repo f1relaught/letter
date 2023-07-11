@@ -106,12 +106,19 @@ app.post("/api/database", async (req, res) => {
   }
 });
 
-const httpsOptions = {
-  key: fs.readFileSync("/etc/letsencrypt/live/ytzba.com/privkey.pem"),
-  cert: fs.readFileSync("/etc/letsencrypt/live/ytzba.com/cert.pem"),
-};
+let httpsOptions = {};
+
+try {
+  httpsOptions = {
+    key: fs.readFileSync("/etc/letsencrypt/live/ytzba.com/privkey.pem"),
+    cert: fs.readFileSync("/etc/letsencrypt/live/ytzba.com/cert.pem"),
+  };
+} catch (err) {
+  console.error('Failed to load SSL certificate files:', err);
+  // Depending on how critical HTTPS is to your app, you might want to stop
+  // execution here, or fallback to HTTP.
+}
 
 https.createServer(httpsOptions, app).listen("3001", () => {
-	console.log("Server running on https://localhost:3001/api");
-  }).on('error', console.error);
-  
+  console.log("Server running on https://localhost:3001/api");
+}).on('error', console.error);
