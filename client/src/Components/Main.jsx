@@ -11,7 +11,7 @@ export default function Main() {
   const [showCantBuyPopup, setShowCantBuyPopup] = useState(false);
 
   useEffect(() => {
-    Axios.get("http://ytzba.com/api/getPsukim")
+    Axios.get("https://ytzba.com/api/getPsukim")
       .then((response) => {
         setPsukim(response.data.psukim);
       })
@@ -36,7 +36,7 @@ export default function Main() {
   const handleChange = async () => {
     try {
       const response = await Axios.get(
-        `http://ytzba.com/api/searchOtyot?ot=${searchInput}`
+        `https://ytzba.com/api/searchOtyot?ot=${searchInput}`
       );
       setOt(response.data);
       console.log(ot);
