@@ -10,6 +10,18 @@ services:
     depends_on:
       - database
 
+  nginx:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+      - '443:443'
+    restart: always
+    depends_on:
+      - api
+
+
   database:
     image: mongo
     ports:
