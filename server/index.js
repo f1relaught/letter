@@ -17,11 +17,10 @@ mongoose.connect("mongodb://database:27017/Otyot");
 // Route for the passuk's search
 app.get("/api/getPsukim", async (req, res) => {
   try {
-    const psukim = await Psukim.find({});
+    const psukim = await Psukim.find({}).populate("otyot");
 
     if (psukim) {
       res.json({ psukim });
-      console.log(psukim);
     } else {
       res.json({ exists: false });
     }
@@ -29,13 +28,13 @@ app.get("/api/getPsukim", async (req, res) => {
     console.error("Error:", error);
     res.status(500).json({ error: "An error occurred while fetching the Passuk." });
   }
-});
+}); 
 
 app.get("/api/getOtyot", async (req, res) => {
   try {
-    const { passukId } = req.query;
-    const otyot = await Otyot.find({ passuk: passukId });
-    console.log(otyot);
+    const otyot = await Otyot.find({ ot: ot });
+    console.log(ot)
+    res.json({ otyot });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "An error occurred while fetching the Otyot." });

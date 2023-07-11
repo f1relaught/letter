@@ -14,6 +14,7 @@ export default function Main() {
     Axios.get("https://ytzba.com/api/getPsukim")
       .then((response) => {
         setPsukim(response.data.psukim);
+        console.log(response.data.psukim);
       })
       .catch((error) => {
         console.error("Error:", error);

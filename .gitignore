@@ -27,3 +27,6 @@ yarn.lock
 
 # Ignore server-dev.js
 server-dev.js
+
+# Ignore client/dist
+client/dist
