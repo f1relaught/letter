@@ -11,16 +11,17 @@ COPY . .
 RUN npm run build
 
 
-FROM nginx:alpine
+# Start with the official Nginx base image
+FROM nginx
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-COPY /nginx/test-default.conf /etc/nginx/conf.d/default.conf
+# Copy the Nginx configuration file
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY /etc/letsencrypt/live/ytzba.com/fullchain.pem /etc/nginx/certs/fullchain.pem
-COPY /etc/letsencrypt/live/ytzba.com/privkey.pem /etc/nginx/certs/privkey.pem
-
-EXPOSE 80 
+# Expose ports 80 and 443
+EXPOSE 80
 EXPOSE 443
 
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
