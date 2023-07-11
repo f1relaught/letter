@@ -5,7 +5,7 @@ services:
       context: ./server
       dockerfile: Dockerfile
     volumes:
-      - ./etc/letsencrypt/live/ytzba.com:/etc/letsencrypt/live
+      - ./certs:/etc/letsencrypt/live/ytzba.com
     ports:
       - '3001:3001'
     restart: always
@@ -17,7 +17,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     volumes:
-      - ./etc/letsencrypt/live/ytzba.com:/etc/nginx/certs
+      - ./certs:/certs
     ports:
       - '80:80'
       - '443:443'
