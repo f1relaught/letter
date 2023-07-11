@@ -11,10 +11,9 @@ export default function Main() {
   const [showCantBuyPopup, setShowCantBuyPopup] = useState(false);
 
   useEffect(() => {
-    Axios.get("https://ytzba.com/api/getPsukim")
+    Axios.get("http://localhost:3001/api/getPsukim")
       .then((response) => {
         setPsukim(response.data.psukim);
-        console.log(response.data);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -37,7 +36,7 @@ export default function Main() {
   const handleChange = async () => {
     try {
       const response = await Axios.get(
-        `https://ytzba.com/api/searchOtyot?ot=${searchInput}`
+        `http://localhost:3001/api/searchOtyot?ot=${searchInput}`
       );
       setOt(response.data);
       console.log(ot);
@@ -47,7 +46,7 @@ export default function Main() {
     }
   };
 
-  const handleBuyLetter = async (ot) => {
+  const handleBuyLetter = async () => {
     try {
       // Update the client-side state and display success message
       setSuccessMessage("You have successfully bought the letter.");
@@ -99,8 +98,15 @@ export default function Main() {
         )}
 
         {/* Render the Passuk components */}
-        {psukim.map((passuk) => {
-          return <Passuk key={passuk._id} passuk={passuk} />;
+        {psukim.map((passuk, key) => {
+          return (
+          <Passuk 
+          key={passuk._id} 
+          passuk={passuk}
+          handleBuyLetter={handleBuyLetter}
+          setShowPopup={setShowPopup}
+          setShowCantBuyPopup={setShowCantBuyPopup} />
+          );
         })}
       </div>
     </>
