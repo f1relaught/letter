@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import Psukim from "./models/Passuks.js";
 import Otyot from "./models/Otyot.js";
 import cors from "cors";
+import https from "https";
+import fs from "fs";
 
 // Create the server
 const app = express();
@@ -95,7 +97,13 @@ app.post("/api/database", async (req, res) => {
   }
 });
 
-// Start the server using plain HTTP
-app.listen(3001, () => {
-  console.log("Server is running on http://localhost:3001");
-});
+// HTTPS server options
+const httpsOptions = {
+  key: fs.readFileSync("/etc/letsencrypt/live/ytzba.com/privkey.pem"),
+  cert: fs.readFileSync("/etc/letsencrypt/live/ytzba.com/fullchain.pem"),
+};
+
+// Create HTTPS server
+https.createServer(httpsOptions, app).listen(3001, () => {
+  console.log("Server running on https://localhost:3001");
+}).on("error", console.error);
