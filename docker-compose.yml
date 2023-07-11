@@ -5,7 +5,7 @@ services:
       context: ./server
       dockerfile: Dockerfile
     volumes:
-      - ./certs:/etc/letsencrypt/live/ytzba.com
+      - ./etc/letsencrypt/live:/etc/letsencrypt/live
     ports:
       - '3001:3001'
     restart: always
@@ -17,7 +17,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     volumes:
-      - ./certs:/certs
+      - ./etc/letsencrypt:/etc/letsencrypt
     ports:
       - '80:80'
       - '443:443'
@@ -29,4 +29,3 @@ services:
     image: mongo
     ports:
       - '27017:27017'
-
