@@ -4,6 +4,8 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
+    volumes:
+      - ./etc/letsencrypt/live/ytzba.com:/etc/letsencrypt/live
     ports:
       - '3001:3001'
     restart: always
@@ -14,6 +16,8 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+    volumes:
+      - ./etc/letsencrypt/live/ytzba.com:/etc/nginx/certs
     ports:
       - '80:80'
       - '443:443'
@@ -21,8 +25,8 @@ services:
     depends_on:
       - api
 
-
   database:
     image: mongo
     ports:
       - '27017:27017'
+

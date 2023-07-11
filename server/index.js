@@ -107,8 +107,8 @@ app.post("/api/database", async (req, res) => {
 });
 
 const httpsOptions = {
-  key: fs.readFileSync("path/to/private.key"),
-  cert: fs.readFileSync("path/to/certificate.crt"),
+  key: fs.readFileSync("/etc/letsencrypt/live/privkey.pem"),
+  cert: fs.readFileSync("/etc/letsencrypt/live/fullchain.pem"),
 };
 
 https.createServer(httpsOptions, app).listen("3001", () => {
