@@ -17,7 +17,7 @@ FROM nginx
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy the Nginx configuration file
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY /nginx/test-default.conf /etc/nginx/conf.d/default.conf
 
 # Expose ports 80 and 443
 EXPOSE 80
