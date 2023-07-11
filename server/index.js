@@ -112,5 +112,6 @@ const httpsOptions = {
 };
 
 https.createServer(httpsOptions, app).listen("3001", () => {
-  console.log("Server running on https://localhost:3001/api");
-});
+	console.log("Server running on https://localhost:3001/api");
+  }).on('error', console.error);
+  
