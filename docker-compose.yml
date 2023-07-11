@@ -5,7 +5,7 @@ services:
       context: ./server
       dockerfile: Dockerfile
     volumes:
-      - ./etc/letsencrypt/live:/etc/letsencrypt/live
+      - /etc/letsencrypt/live:/etc/letsencrypt/live
     ports:
       - '3001:3001'
     restart: always
@@ -17,7 +17,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     volumes:
-      - ./etc/letsencrypt:/etc/letsencrypt
+      - /etc/letsencrypt:/etc/letsencrypt
     ports:
       - '80:80'
       - '443:443'
