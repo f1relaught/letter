@@ -11,6 +11,8 @@ services:
     restart: always
     depends_on:
       - database
+    networks:
+      - app-network
 
   nginx:
     build:
@@ -24,8 +26,15 @@ services:
     restart: always
     depends_on:
       - api
+    networks:
+      - app-network
 
   database:
     image: mongo
     ports:
       - '27017:27017'
+    networks:
+      - app-network
+
+networks:
+  app-network:
