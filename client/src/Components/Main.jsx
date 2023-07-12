@@ -1,6 +1,6 @@
 import Passuk from "./Passuk";
 import { debounce } from 'lodash';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Axios from "axios";
 
 export default function Main() {
@@ -12,9 +12,10 @@ export default function Main() {
   const [showCantBuyPopup, setShowCantBuyPopup] = useState(false);
 
   useEffect(() => {
-    Axios.get("https://ytzba.com/api/getPsukim")
+    Axios.get("http://localhost:3001/api/getPsukim")
       .then((response) => {
         setPsukim(response.data.psukim);
+        console.log(response.data.psukim)
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -23,17 +24,26 @@ export default function Main() {
   }, []);
 
   // Define debounced version of the API call
-const debouncedSearch = debounce((ot) => {
-  Axios.get(`http://localhost:3001/api/searchOtyot?ot=${ot}`)
-    .then((response) => {
-      setOt(response.data);
-      console.log(response.data)
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-}, 300);
+  const debouncedSearch = useCallback(debounce((input) => {
+    Axios.get(`http://localhost:3001/api/searchOtyot?input=${input}`)
+      .then((response) => {
+        setOt(response.data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    }, 300),
+    []
+    );
 
+  const handleChange = useCallback(() => {
+    if (searchInput) {
+      debouncedSearch(searchInput);
+    } else {
+      setOt([]);
+    }
+  }, [searchInput, debouncedSearch]
+  );
   useEffect(() => {
     if (searchInput) {
       debouncedSearch(searchInput);
@@ -42,18 +52,6 @@ const debouncedSearch = debounce((ot) => {
     }
   }, [searchInput, debouncedSearch]);
   
-  useEffect(() => {
-    if (ot.length > 0) {
-      const status = ot[0].status;
-      console.log(ot);
-      if (status) {
-        setShowPopup(true);
-      } else {
-        setShowCantBuyPopup(true);
-      }
-    }
-  }, [ot]);
-
   const handleBuyLetter = async () => {
     try {
       // Update the client-side state and display success message
@@ -66,29 +64,28 @@ const debouncedSearch = debounce((ot) => {
     }
   };
 
- const renderedOtyot = ot
-    .filter(otItem => !psukim.some(psukimItem => psukimItem.passuk.passuk === otItem.passuk.passuk))
-    .slice(0, 5);
   return (
-    <>
-      <div>
+    <div className="flex flex-row">
+      <div className="w-1/2 h-full border rounded-lg">
         <input
           type="text"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           placeholder="הכנס אותיות פנויות"
         />
-        {/* <button onClick={handleChange}>חפש</button> */}
-        {ot.slice(0, 5).map((otItem) => {
+        <button onClick={handleChange}>חפש</button>
+        <div className="px-5 bg-sky-200 border rounded-t-lg w-auto">
+          {searchInput}
+        </div>
+        {ot.map((otItem) => {
           return (
-            <div className="px-5 bg-sky-200 border rounded-sm" key={otItem._id}>
-              <div>OT: {otItem.ot}</div>
-              <div>Passuk: {otItem.passuk.passuk}</div>
+            <div className="px-5 bg-sky-200 border rounded-b-lg w-auto" key={otItem._id}>
+              <div>{otItem.passuk.passuk}</div>
             </div>
           );
         })}
-
       </div>
+      <div className="w-3/4">
       {showPopup && (
         <div className=">fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-lg shadow">
@@ -126,6 +123,8 @@ const debouncedSearch = debounce((ot) => {
         setShowCantBuyPopup={setShowCantBuyPopup} />
         );
       })}
-    </>
-  );
-}
+      </div>
+    </div>
+    );
+  }
+

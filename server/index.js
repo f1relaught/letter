@@ -76,9 +76,6 @@ app.get("/api/searchOtyot", async (req, res) => {
   }
 });
 
-
-
-
 // Route for the generation of the database
 app.post("/api/database", async (req, res) => {
   try {
