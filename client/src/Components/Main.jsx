@@ -76,15 +76,17 @@ const debouncedSearch = useCallback(debounce((ot) => {
           placeholder="הכנס אותיות פנויות"
         />
         {/* <button onClick={handleChange}>חפש</button> */}
-        {ot.slice(0, 5).map((otItem) => {
-          return (
-            <div className="px-5 bg-sky-200 border rounded-sm" key={otItem._id}>
-              <div>OT: {otItem.ot}</div>
-              <div>Passuk: {otItem.passuk.passuk}</div>
-            </div>
-          );
-        })}
-
+        {ot
+  .filter(otItem => !psukim.some(psukimItem => psukimItem.passuk.passuk === otItem.passuk.passuk))
+  .slice(0, 5)
+  .map((otItem) => {
+    return (
+      <div className="px-5 bg-sky-200 border rounded-sm" key={otItem._id}>
+        <div>OT: {otItem.ot}</div>
+        <div>Passuk: {otItem.passuk.passuk}</div>
+      </div>
+    );
+  })}
       </div>
       {showPopup && (
         <div className=">fixed inset-0 flex items-center justify-center z-50">
