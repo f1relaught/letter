@@ -6,6 +6,7 @@ import Axios from "axios";
 export default function Main() {
   const [psukim, setPsukim] = useState([]);
   const [ot, setOt] = useState([]);
+  const [renderedPassukim, setRenderedPassukim] = useState(new Set());
   const [searchInput, setSearchInput] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
@@ -76,17 +77,20 @@ const debouncedSearch = useCallback(debounce((ot) => {
           placeholder="הכנס אותיות פנויות"
         />
         {/* <button onClick={handleChange}>חפש</button> */}
-        {ot
-  .filter(otItem => !psukim.some(psukimItem => psukimItem.passuk.passuk === otItem.passuk.passuk))
-  .slice(0, 5)
-  .map((otItem) => {
-    return (
-      <div className="px-5 bg-sky-200 border rounded-sm" key={otItem._id}>
-        <div>OT: {otItem.ot}</div>
-        <div>Passuk: {otItem.passuk.passuk}</div>
-      </div>
-    );
-  })}
+        {
+    ot.filter(otItem => !renderedPassukim.has(otItem.passuk.passuk))
+      .slice(0, 5)
+      .map((otItem) => {
+        // Add `otItem.passuk.passuk` to `renderedPassukim`
+        setRenderedPassukim((prevState) => new Set([...prevState, otItem.passuk.passuk]));
+        return (
+          <div className="px-5 bg-sky-200 border rounded-sm" key={otItem._id}>
+            <div>OT: {otItem.ot}</div>
+            <div>Passuk: {otItem.passuk.passuk}</div>
+          </div>
+        );
+      });
+  }
       </div>
       {showPopup && (
         <div className=">fixed inset-0 flex items-center justify-center z-50">
