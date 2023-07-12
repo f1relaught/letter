@@ -77,23 +77,14 @@ const debouncedSearch = useCallback(debounce((ot) => {
           type="text"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          placeholder="הכנס אותיות פנויות"
+          placeholder="הכנס שם..."
         />
-        {/* <button onClick={handleChange}>חפש</button> */}
-        {
-    ot.filter(otItem => !renderedPassukim.has(otItem.passuk.passuk))
-      .slice(0, 5)
-      .map((otItem) => {
-        // Add `otItem.passuk.passuk` to `renderedPassukim`
-        setRenderedPassukim((prevState) => new Set([...prevState, otItem.passuk.passuk]));
-        return (
+        {renderedOtyot.map((otItem) => (
           <div className="px-5 bg-sky-200 border rounded-sm" key={otItem._id}>
             <div>OT: {otItem.ot}</div>
             <div>Passuk: {otItem.passuk.passuk}</div>
           </div>
-        );
-      });
-  }
+        ))}
       </div>
       {showPopup && (
         <div className=">fixed inset-0 flex items-center justify-center z-50">
