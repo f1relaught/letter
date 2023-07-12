@@ -1,5 +1,6 @@
 import Passuk from "./Passuk";
-import { useEffect, useState } from "react";
+import { debounce } from 'lodash';
+import { useEffect, useState, useCallback } from "react";
 import Axios from "axios";
 
 export default function Main() {
@@ -11,10 +12,9 @@ export default function Main() {
   const [showCantBuyPopup, setShowCantBuyPopup] = useState(false);
 
   useEffect(() => {
-    Axios.get("https://ytzba.com/api/getPsukim")
+    Axios.get("http://localhost:3001/api/getPsukim")
       .then((response) => {
         setPsukim(response.data.psukim);
-        console.log(response.data.psukim);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -22,6 +22,26 @@ export default function Main() {
       });
   }, []);
 
+  // Define debounced version of the API call
+const debouncedSearch = useCallback(debounce((ot) => {
+  Axios.get(`http://localhost:3001/api/searchOtyot?ot=${ot}`)
+    .then((response) => {
+      setOt(response.data);
+      console.log(response.data)
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}, 300), []);
+
+  useEffect(() => {
+    if (searchInput) {
+      debouncedSearch(searchInput);
+    } else {
+      setOt([]);
+    }
+  }, [searchInput, debouncedSearch]);
+  
   useEffect(() => {
     if (ot.length > 0) {
       const status = ot[0].status;
@@ -33,19 +53,6 @@ export default function Main() {
       }
     }
   }, [ot]);
-
-  const handleChange = async () => {
-    try {
-      const response = await Axios.get(
-        `https://ytzba.com/api/searchOtyot?ot=${searchInput}`
-      );
-      setOt(response.data);
-      console.log(ot);
-    } catch (error) {
-      console.error("Error:", error);
-      // Handle error
-    }
-  };
 
   const handleBuyLetter = async () => {
     try {
@@ -62,54 +69,60 @@ export default function Main() {
   return (
     <>
       <div>
-        <h1>חפש לפי אותיות פנויות</h1>
-        <div>
-          <input
-            type="text"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="הכנס אותיות פנויות"
-          />
-          <button onClick={handleChange}>חפש</button>
-        </div>
-        {showPopup && (
-          <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-white p-8 rounded-lg shadow">
-              <h2 className="text-2xl font-bold mb-4">Buy Letter</h2>
-              <p className="mb-4">Are you sure you want to buy this letter?</p>
-              <button
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                onClick={() => handleBuyLetter(ot)}
-              >
-                Buy
-              </button>
-            </div>
-          </div>
-        )}
-        {showCantBuyPopup && (
-          <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-white p-8 rounded-lg shadow">
-              <h2 className="text-2xl font-bold mb-4">Can't Buy Letter</h2>
-              <p className="mb-4">!This letter is not available to be bought</p>
-            </div>
-          </div>
-        )}
-        {successMessage && (
-          <div className="success-message text-center">{successMessage}</div>
-        )}
-
-        {/* Render the Passuk components */}
-        {psukim.map((passuk, key) => {
+        <input
+          type="text"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          placeholder="הכנס אותיות פנויות"
+        />
+        {/* <button onClick={handleChange}>חפש</button> */}
+        {ot.slice(0, 5).map((otItem) => {
           return (
-          <Passuk 
-          key={passuk._id} 
-          passuk={passuk}
-          handleBuyLetter={handleBuyLetter}
-          setShowPopup={setShowPopup}
-          setShowCantBuyPopup={setShowCantBuyPopup} />
+            <div className="px-5 bg-sky-200 border rounded-sm" key={otItem._id}>
+              <div>OT: {otItem.ot}</div>
+              <div>Passuk: {otItem.passuk.passuk}</div>
+            </div>
           );
         })}
+
       </div>
+      {showPopup && (
+        <div className=">fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg shadow">
+            <h2 className="text-2xl font-bold mb-4">Buy Letter</h2>
+            <p className="mb-4">Are you sure you want to buy this letter?</p>
+            <button
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              onClick={handleBuyLetter}
+            >
+              Buy
+            </button>
+          </div>
+        </div>
+      )}
+      {showCantBuyPopup && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg shadow">
+            <h2 className="text-2xl font-bold mb-4">Can't Buy Letter</h2>
+            <p className="mb-4">!This letter is not available to be bought</p>
+          </div>
+        </div>
+      )}
+      {successMessage && (
+        <div className="success-message text-center">{successMessage}</div>
+      )}
+
+      {/* Render the Passuk components */}
+      {psukim.map((passuk, key) => {
+        return (
+        <Passuk 
+        key={passuk._id} 
+        passuk={passuk}
+        handleBuyLetter={handleBuyLetter}
+        setShowPopup={setShowPopup}
+        setShowCantBuyPopup={setShowCantBuyPopup} />
+        );
+      })}
     </>
   );
 }

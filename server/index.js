@@ -21,6 +21,7 @@ app.get("/api/getPsukim", async (req, res) => {
 
     if (psukim) {
       res.json({ psukim });
+      console.log(psukim)
     } else {
       res.json({ exists: false });
     }
@@ -28,29 +29,18 @@ app.get("/api/getPsukim", async (req, res) => {
     console.error("Error:", error);
     res.status(500).json({ error: "An error occurred while fetching the Passuk." });
   }
-}); 
-
-app.get("/api/getOtyot", async (req, res) => {
-  try {
-    const otyot = await Otyot.find({ ot: ot });
-    console.log(ot)
-    res.json({ otyot });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "An error occurred while fetching the Otyot." });
-  }
 });
 
 app.get("/api/searchOtyot", async (req, res) => {
   try {
     const { ot } = req.query;
-    const otyot = await Otyot.find({ ot: ot });
+    const otyot = await Otyot.find({ ot: ot }).populate("passuk");
 
     if (otyot.length > 0) {
       console.log(otyot.ot);
       res.json(otyot);
     } else {
-      res.json({ exists: false });
+      res.json([]);
     }
   } catch (error) {
     console.error("Error:", error);
@@ -90,6 +80,7 @@ app.post("/api/database", async (req, res) => {
         });
         await newOtyot.save();
         newPassuk.otyot.push(newOtyot._id);
+        newOtyot.passuk.push(newPassuk._id);
       }
       await newPassuk.save();
     }
