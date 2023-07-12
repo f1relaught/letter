@@ -21,7 +21,6 @@ app.get("/api/getPsukim", async (req, res) => {
 
     if (psukim) {
       res.json({ psukim });
-      console.log(psukim)
     } else {
       res.json({ exists: false });
     }
@@ -33,20 +32,51 @@ app.get("/api/getPsukim", async (req, res) => {
 
 app.get("/api/searchOtyot", async (req, res) => {
   try {
-    const { ot } = req.query;
-    const otyot = await Otyot.find({ ot: ot }).populate("passuk");
+    let otyot = [];
+    const { input } = req.query;
 
-    if (otyot.length > 0) {
-      console.log(otyot.ot);
-      res.json(otyot);
+    //checks if it is a word or a letter
+    const mila = input.split("");
+
+    if (mila.length > 1) {
+      for (const ot of mila) {
+        const results = await Otyot.findOne({ ot }).populate("passuk");
+          otyot.push(results);
+      }
     } else {
-      res.json([]);
+      otyot = await Otyot.find({ ot: input }).populate("passuk");
     }
-  } catch (error) {
+      if (otyot.length > 0) {
+        // Sort the Otyot by their passuk index
+        otyot.sort((a, b) => a.passuk.index - b.passuk.index);
+
+      // Check if the indices of the Otyot are in order of the user's input
+      let isInOrder = true;
+      for (let i = 0; i < mila.length - 1; i++) {
+        if (otyot[i].ot !== mila[i]) {
+          isInOrder = false;
+          break;
+        }
+      }
+      console.log(isInOrder)
+      if (isInOrder) {
+        // If the Otyot are in order, store the group
+        let orderedMila = otyot;
+        return res.json(orderedMila);
+    } else {
+    return res.json([]);
+
+    }
+    } else {
+      return res.json([]);
+    }
+} catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ error: "An error occurred while fetching the Otyot." });
+    return res.status(500).json({ error: "An error occurred while fetching the Otyot." });
   }
 });
+
+
 
 
 // Route for the generation of the database
@@ -60,27 +90,23 @@ app.post("/api/database", async (req, res) => {
         .json({ error: "Invalid input. Please provide an array of passukim." });
     }
 
-    for (const passukObj of passukim) {
-      if (typeof passukObj.passuk !== "string") {
+    for ( let i = 0; i < passukim.length; i++) {
+      if (typeof passukim[i].passuk !== "string") {
         return res
           .status(400)
           .json({ error: "Invalid passuk. All passukim must be strings." });
       }
 
       // Create a new Psukim object
-      const newPassuk = new Psukim({ passuk: passukObj.passuk, otyot: [] });
+      const newPassuk = new Psukim({ passuk: passukim[i].passuk,index: i, otyot: [] });
       const passukId = newPassuk._id;
 
-      const otyot = passukObj.passuk.split("");
-      for (const ot of otyot) {
-        const newOtyot = new Otyot({
-          ot,
-          status: true,
-          passuk: passukId,
-        });
+      const otyot = passukim[i].passuk.split("");
+      for ( let i = 0; i < otyot.length; i++) {
+        const ot = otyot[i];
+        const newOtyot = new Otyot({ ot, status: true,  index: i ,passuk: passukId });
         await newOtyot.save();
         newPassuk.otyot.push(newOtyot._id);
-        newOtyot.passuk.push(newPassuk._id);
       }
       await newPassuk.save();
     }

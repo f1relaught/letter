@@ -4,8 +4,9 @@ const { Schema, model } = mongoose;
 const OtyotSchema = new Schema({
     ot: String,
     count: Number,
+    index: Number,
     status: Boolean,
-    passuk: [{ type: Schema.Types.ObjectId, ref: "Psukim" }],
+    passuk: { type: Schema.Types.ObjectId, ref: "Psukim" },
 });
 
 const Otyot = model('Otyot', OtyotSchema);
