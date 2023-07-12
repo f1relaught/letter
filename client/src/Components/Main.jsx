@@ -128,6 +128,6 @@ const debouncedSearch = useCallback(debounce((ot) => {
         setShowCantBuyPopup={setShowCantBuyPopup} />
         );
       })}
-   </div>
+    </>
   );
 }
