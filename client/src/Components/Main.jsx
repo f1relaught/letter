@@ -67,6 +67,9 @@ const debouncedSearch = useCallback(debounce((ot) => {
     }
   };
 
+ const renderedOtyot = ot
+    .filter(otItem => !psukim.some(psukimItem => psukimItem.passuk.passuk === otItem.passuk.passuk))
+    .slice(0, 5);
   return (
     <>
       <div>
