@@ -6,11 +6,9 @@ import Axios from "axios";
 export default function Main() {
   const [psukim, setPsukim] = useState([]);
   const [ot, setOt] = useState([]);
-  const [renderedPassukim, setRenderedPassukim] = useState(new Set());
   const [searchInput, setSearchInput] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
-  const [displayResults, setDisplayResults] = useState(false);
   const [showCantBuyPopup, setShowCantBuyPopup] = useState(false);
 
   useEffect(() => {
@@ -25,7 +23,7 @@ export default function Main() {
   }, []);
 
   // Define debounced version of the API call
-const debouncedSearch = useCallback(debounce((ot) => {
+const debouncedSearch = debounce((ot) => {
   Axios.get(`http://localhost:3001/api/searchOtyot?ot=${ot}`)
     .then((response) => {
       setOt(response.data);
@@ -34,7 +32,7 @@ const debouncedSearch = useCallback(debounce((ot) => {
     .catch((error) => {
       console.error("Error:", error);
     });
-}, 300), []);
+}, 300);
 
   useEffect(() => {
     if (searchInput) {
