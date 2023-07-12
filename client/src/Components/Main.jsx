@@ -6,6 +6,7 @@ import Axios from "axios";
 export default function Main() {
   const [psukim, setPsukim] = useState([]);
   const [ot, setOt] = useState([]);
+  const [renderedPassukim, setRenderedPassukim] = useState(new Set());
   const [searchInput, setSearchInput] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
@@ -23,23 +24,37 @@ export default function Main() {
       });
   }, []);
 
-  const debouncedSearch = debounce(() => {
-    Axios.get(`https://ytzba.com/api/searchOtyot?input=${searchInput}`)
-      .then((response) => {
-        setDisplayResults(true)
-        setOt(response.data)
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        return(
-          <div>"השם לא קיים עוד"</div>
-        )
-      });
-  }, 300); // Debounce delay of 300ms
+  // Define debounced version of the API call
+const debouncedSearch = useCallback(debounce((ot) => {
+  Axios.get(`http://localhost:3001/api/searchOtyot?ot=${ot}`)
+    .then((response) => {
+      setOt(response.data);
+      console.log(response.data)
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}, 300), []);
 
-  const handleSearch = () => {
-    debouncedSearch();
-  };
+  useEffect(() => {
+    if (searchInput) {
+      debouncedSearch(searchInput);
+    } else {
+      setOt([]);
+    }
+  }, [searchInput, debouncedSearch]);
+  
+  useEffect(() => {
+    if (ot.length > 0) {
+      const status = ot[0].status;
+      console.log(ot);
+      if (status) {
+        setShowPopup(true);
+      } else {
+        setShowCantBuyPopup(true);
+      }
+    }
+  }, [ot]);
 
   const handleBuyLetter = async () => {
     try {
@@ -53,29 +68,28 @@ export default function Main() {
     }
   };
 
+ const renderedOtyot = ot
+    .filter(otItem => !psukim.some(psukimItem => psukimItem.passuk.passuk === otItem.passuk.passuk))
+    .slice(0, 5);
   return (
-    <div className="flex-row items-center">
-      <div className="flex items-center text-center">
-        <div className="w-1/4 border rounded-xl">
-          <input
-            type="text"
-            value={searchInput}
-            onChange={(event) => setSearchInput(event.target.value)}
-            placeholder="הכנס אותיות פנויות"
-          />
-          <button onClick={handleSearch}>חפש</button>
-          {searchInput && ot.length > 0 && <div className="text-center text-black font-bold">{searchInput}</div>}
-          { displayResults &&
-            ot.slice(0, 5).map((otItem) => {
-              return (
-                <div className="px-5 py-2 w-auto bg-sky-200 border rounded-sm" key={otItem._id}>
-                  <div>{otItem.passuk.passuk}</div>
-                </div>
-              );
-            })
-          }
+    <>
+      <div>
+        <input
+          type="text"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          placeholder="הכנס אותיות פנויות"
+        />
+        {/* <button onClick={handleChange}>חפש</button> */}
+        {ot.slice(0, 5).map((otItem) => {
+          return (
+            <div className="px-5 bg-sky-200 border rounded-sm" key={otItem._id}>
+              <div>OT: {otItem.ot}</div>
+              <div>Passuk: {otItem.passuk.passuk}</div>
+            </div>
+          );
+        })}
 
-        </div>
       </div>
       {showPopup && (
         <div className=">fixed inset-0 flex items-center justify-center z-50">
