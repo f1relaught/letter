@@ -14,7 +14,6 @@ app.use(express.json());
 // Connect to the database
 mongoose.connect("mongodb://database:27017/Otyot");
 
-// Route for the passuk's search
 app.get("/api/getPsukim", async (req, res) => {
   try {
     const psukim = await Psukim.find({}).populate("otyot");
@@ -62,6 +61,7 @@ app.get("/api/searchOtyot", async (req, res) => {
       if (isInOrder) {
         // If the Otyot are in order, store the group
         let orderedMila = otyot;
+        console.log(orderedMila.length)
         return res.json(orderedMila);
     } else {
     return res.json([]);
@@ -75,6 +75,9 @@ app.get("/api/searchOtyot", async (req, res) => {
     return res.status(500).json({ error: "An error occurred while fetching the Otyot." });
   }
 });
+
+
+
 
 // Route for the generation of the database
 app.post("/api/database", async (req, res) => {
@@ -115,6 +118,8 @@ app.post("/api/database", async (req, res) => {
       .json({ error: "An error occurred while storing the passukim and their otyot." });
   }
 });
+
+
 
 // HTTPS server options
 const httpsOptions = {
