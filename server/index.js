@@ -81,8 +81,8 @@ app.post("/api/database", async (req, res) => {
       const newPassuk = new Psukim({ passuk: passukObj.passuk, otyot: [] });
       const passukId = newPassuk._id;
 
-      // Assuming passukObj.otyot is an array of strings for each ot
-      for (const ot of passukObj.otyot) {
+      const otyot = passukObj.passuk.split("");
+      for (const ot of otyot) {
         const newOtyot = new Otyot({
           ot,
           status: true,
