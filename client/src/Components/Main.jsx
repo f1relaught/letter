@@ -77,7 +77,7 @@ const debouncedSearch = useCallback(debounce((ot) => {
         />
         {/* <button onClick={handleChange}>חפש</button> */}
         {ot
-  .filter(otItem => !ot.passuk.some(psukimItem => psukimItem.passuk.passuk === otItem.passuk.passuk))
+  .filter(otItem => !psukim.some(psukimItem => psukimItem.passuk.passuk === otItem.passuk.passuk))
   .slice(0, 5)
   .map((otItem) => {
     return (
