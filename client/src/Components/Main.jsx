@@ -12,7 +12,7 @@ export default function Main() {
   const [showCantBuyPopup, setShowCantBuyPopup] = useState(false);
 
   useEffect(() => {
-    Axios.get("http://localhost:3001/api/getPsukim")
+    Axios.get("https://ytzba.com/api/getPsukim")
       .then((response) => {
         setPsukim(response.data.psukim);
         console.log(response.data.psukim)
@@ -25,7 +25,7 @@ export default function Main() {
 
   // Define debounced version of the API call
   const debouncedSearch = useCallback(debounce((input) => {
-    Axios.get(`http://localhost:3001/api/searchOtyot?input=${input}`)
+    Axios.get(`https://ytzba.com/api/searchOtyot?input=${input}`)
       .then((response) => {
         setOt(response.data);
       })
