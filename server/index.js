@@ -62,37 +62,43 @@ app.get("/api/searchOtyot", async (req, res) => {
 // Route for the generation of the database
 app.post("/api/database", async (req, res) => {
   try {
-    const passuk = req.body.passuk;
+    const passukim = req.body.passukim; // Assuming 'passukim' is an array of objects
 
-    if (typeof passuk !== "string") {
+    if (!Array.isArray(passukim)) {
       return res
         .status(400)
-        .json({ error: "Invalid sentence. Please provide a string." });
+        .json({ error: "Invalid input. Please provide an array of passukim." });
     }
 
-    // Store the sentence in the passuks collection
-    const newPassuk = new Psukim({ passuk, otyot: [] });
-    const passukId = newPassuk._id;
+    for (const passukObj of passukim) {
+      if (typeof passukObj.passuk !== "string") {
+        return res
+          .status(400)
+          .json({ error: "Invalid passuk. All passukim must be strings." });
+      }
 
-    // Store the otyot in the otyot collection
-    const otyot = passuk.split("");
+      // Create a new Psukim object
+      const newPassuk = new Psukim({ passuk: passukObj.passuk, otyot: [] });
+      const passukId = newPassuk._id;
 
-    for (const ot of otyot) {
-      const newOtyot = new Otyot({
-        ot,
-        status: true,
-        passuk: passukId,
-      });
-      await newOtyot.save();
-      newPassuk.otyot.push(newOtyot._id);
+      // Assuming passukObj.otyot is an array of strings for each ot
+      for (const ot of passukObj.otyot) {
+        const newOtyot = new Otyot({
+          ot,
+          status: true,
+          passuk: passukId,
+        });
+        await newOtyot.save();
+        newPassuk.otyot.push(newOtyot._id);
+      }
+      await newPassuk.save();
     }
-    await newPassuk.save();
-    res.status(200).json({ message: "Passuk and otyot stored successfully." });
+    res.status(200).json({ message: "All passukim and their otyot stored successfully." });
   } catch (error) {
     console.error("Error:", error);
     res
       .status(500)
-      .json({ error: "An error occurred while storing the passuk and otyot." });
+      .json({ error: "An error occurred while storing the passukim and their otyot." });
   }
 });
 
